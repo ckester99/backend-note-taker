@@ -27,6 +27,21 @@ const readAndAppend = (content, file) => {
     });
 };
 
+app.delete("/api/notes/:id", (req, res) => {
+    const id = req.params.id;
+    fs.readFile("./db/db.json", "utf8", (err, data) => {
+        if (err) {
+            console.error(err);
+        } else {
+            const parsedData = JSON.parse(data);
+            const filteredData = parsedData.filter((obj) => obj.id != id);
+            writeToFile("./db/db.json", filteredData);
+            console.log("deleted notes!");
+        }
+    });
+    res.send(`Got a delete request for id: ${id}!`);
+});
+
 app.post("/api/notes", (req, res) => {
     const { title, text } = req.body;
 
@@ -60,6 +75,7 @@ app.get("/notes", (req, res) => {
 
 app.get("/api/notes", (req, res) => {
     readFromFile("./db/db.json").then((data) => res.json(JSON.parse(data)));
+    console.log("get notes!");
 });
 
 app.listen(port, () => {
